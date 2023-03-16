@@ -10,7 +10,7 @@ In other words, it's a bot designed to make livestreams on discord.
 
 ## Quick Start
 
-### Depedencies
+### Dependencies
 
 This project depends on `OpenCV` and `SDL2`, which can be installed via the command:
 
