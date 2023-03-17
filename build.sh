@@ -19,6 +19,23 @@ build_webcam_rs() {
     cp $webcam_rs_path ./bin/
 }
 
+build_image_rs() {
+    cargo build --manifest-path=./image-rs/Cargo.toml
+
+    image_rs_path=""
+    if [ -f ./image-rs/target/debug/image-rs ]; then
+        image_rs_path=./image-rs/target/debug/image-rs
+    elif [ -f ./image-rs/target/release/image-rs ]; then
+        image_rs_path=./image-rs/release/debug/image-rs
+    else
+        echo "ERROR: Could not find `image-rs` binary path" 1>&2
+    fi
+
+    mkdir -p ./bin
+
+    cp $image_rs_path ./bin/
+}
+
 build_project() {
     cargo build
     if [ "$1" = "run" ]; then
@@ -28,4 +45,5 @@ build_project() {
 }
 
 build_webcam_rs
+build_image_rs
 build_project $@

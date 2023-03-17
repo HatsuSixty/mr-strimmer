@@ -1,13 +1,11 @@
-use std::path::Path;
-use std::process::Command;
-use std::process::exit;
+use super::*;
 
 pub fn floatwebcam() {
     if Path::new("./bin/webcam-rs").is_file() {
         if let Err(e) = Command::new("sh")
             .arg("-c")
             .arg("./bin/webcam-rs")
-            .output()
+            .status()
         {
             eprintln!("ERROR: Could not execute `./bin/webcam-rs`: {}", e);
             exit(1);
@@ -16,7 +14,7 @@ pub fn floatwebcam() {
         if let Err(e) = Command::new("sh")
             .arg("-c")
             .arg("webcam-rs")
-            .output()
+            .status()
         {
             eprintln!("ERROR: Could not execute `webcam-rs`: {}", e);
             exit(1);
