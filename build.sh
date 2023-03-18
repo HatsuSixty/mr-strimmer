@@ -47,6 +47,10 @@ build_project() {
 if [ "$1" = "clean" ]; then
     find . -iname "*~" -exec rm {} +
     rm -r bin/
+elif [ "$1" = "clean_all" ]; then
+    find . -iname "*~" -exec rm {} +
+    rm -r bin/
+    git clean -fdx
 else
     build_webcam_rs
     build_image_rs
