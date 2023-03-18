@@ -183,9 +183,21 @@ pub fn floatimg(image: String) {
 
         let texture;
         if let Ok(t) = texture_creator.load_texture(Path::new(image_path.as_str())) {
+            let window = canvas.window_mut();
+
+            let (w, h) = get_image_dimensions(image_path.clone());
+            if window.size() != (w, h) {
+                window.set_size(w, h).unwrap();
+            }
             texture = t;
         } else {
             if let Ok(t) = texture_creator.load_texture(Path::new(INVALID_PNG_PATH)) {
+                let window = canvas.window_mut();
+
+                let (w, h) = get_image_dimensions(INVALID_PNG_PATH.to_string());
+                if window.size() != (w, h) {
+                    window.set_size(w, h).unwrap();
+                }
                 texture = t;
             } else {
                 eprintln!("ERROR: Could not load texture `{}`", INVALID_PNG_PATH);
