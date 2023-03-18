@@ -1,7 +1,6 @@
 use sdl2::event::Event;
 use sdl2::image::{InitFlag, LoadTexture};
 
-use std::fs::OpenOptions;
 use std::io::{BufRead, BufReader, Write};
 use std::net::{TcpListener, TcpStream, ToSocketAddrs};
 use std::path::Path;
@@ -12,6 +11,7 @@ use std::time::Duration;
 
 use super::image::*;
 use super::parser::*;
+use super::download::*;
 
 pub fn change_img(image: String) {
     let host = "localhost:6969";
@@ -86,45 +86,7 @@ pub fn floatimg(image: String) {
 
     let mut image_path = image.clone();
 
-    {
-        if !Path::new(INVALID_PNG_PATH).is_file() {
-            let mut dest;
-            if let Ok(f) = OpenOptions::new()
-                .read(true)
-                .write(true)
-                .create(true)
-                .open(INVALID_PNG_PATH)
-            {
-                dest = f;
-            } else {
-                eprintln!("ERROR: Could not open file `{}`", INVALID_PNG_PATH);
-                exit(1);
-            }
-
-            let source;
-            if let Ok(s) = reqwest::blocking::get(
-                "https://archive.org/download/png-transparency-demonstration-1/PNG_transparency_demonstration_1.png",
-            ) {
-                if let Ok(t) = s.bytes() {
-                    source = t;
-                } else {
-                    eprintln!(
-                        "ERROR: When downloading `{}`: Could not get text from response",
-                        INVALID_PNG_PATH
-                    );
-                    exit(1);
-                }
-            } else {
-                eprintln!("ERROR: Could not download file `{}`", INVALID_PNG_PATH);
-                exit(1);
-            }
-
-            if let Err(_) = dest.write_all(&source) {
-                eprintln!("ERROR: Could not write to file `{}`", INVALID_PNG_PATH);
-                exit(1);
-            }
-        }
-    }
+    download_file("https://archive.org/download/png-transparency-demonstration-1/PNG_transparency_demonstration_1.png".to_string(), INVALID_PNG_PATH.to_string());
 
     let (mut width, mut height) = get_image_dimensions(image.clone());
     if (width == 0 || height == 0) || (width == 0 && height == 0) {

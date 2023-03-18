@@ -2,18 +2,22 @@ use std::collections::VecDeque;
 use std::env::args;
 use std::process::exit;
 
-mod video;
+mod download;
 mod image;
 mod parser;
+mod video;
 
 use video::*;
 
 fn usage(myself: String, error: bool) {
-    let help = format!(r#"USAGE: {} [OPTIONS] <INPUT>
+    let help = format!(
+        r#"USAGE: {} [OPTIONS] <INPUT>
   INPUT: The image that is going to be displayed
   OPTIONS:
     --help        Shows this help and exits with 0 exit code
-    --set <file>  Change the image that is currently being displayed to <file>"#, myself);
+    --set <file>  Change the image that is currently being displayed to <file>"#,
+        myself
+    );
     if !error {
         println!("{}", help);
     } else {
