@@ -82,14 +82,11 @@ pub fn floatimg(image: String) {
         exit(1);
     }
 
-    let (mut width, mut height) = get_image_dimensions(image.clone());
-
     static INVALID_PNG_PATH: &str = "/tmp/invalid.png";
 
     let mut image_path = image.clone();
 
-    if (width == 0 || height == 0) || (width == 0 && height == 0) {
-        image_path = INVALID_PNG_PATH.to_string();
+    {
         if !Path::new(INVALID_PNG_PATH).is_file() {
             let mut dest;
             if let Ok(f) = OpenOptions::new()
@@ -127,7 +124,12 @@ pub fn floatimg(image: String) {
                 exit(1);
             }
         }
-        (width, height) = get_image_dimensions(INVALID_PNG_PATH.to_string());
+    }
+
+    let (mut width, mut height) = get_image_dimensions(image.clone());
+    if (width == 0 || height == 0) || (width == 0 && height == 0) {
+        image_path = INVALID_PNG_PATH.to_string();
+        (width, height) = get_image_dimensions(image_path.clone());
     }
 
     let window;
@@ -172,15 +174,23 @@ pub fn floatimg(image: String) {
         }
 
         if let Ok(msg) = rx.recv_timeout(Duration::from_millis(10)) {
-            println!("[floatimg] request: {:?}", parse_request(msg));
+            let args = parse_request(msg);
+            if args[0] == "chimg".to_string() {
+                image_path = args[1].clone();
+                println!("[floatimg] changing image to: `{}`", image_path);
+            }
         }
 
         let texture;
         if let Ok(t) = texture_creator.load_texture(Path::new(image_path.as_str())) {
             texture = t;
         } else {
-            eprintln!("ERROR: Could not create texture from image `{}`", image_path);
-            exit(1);
+            if let Ok(t) = texture_creator.load_texture(Path::new(INVALID_PNG_PATH)) {
+                texture = t;
+            } else {
+                eprintln!("ERROR: Could not load texture `{}`", INVALID_PNG_PATH);
+                exit(1);
+            }
         }
 
         canvas.clear();
