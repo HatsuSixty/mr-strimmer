@@ -44,6 +44,11 @@ build_project() {
     fi
 }
 
-build_webcam_rs
-build_image_rs
-build_project $@
+if [ "$1" = "clean" ]; then
+    find . -iname "*~" -exec rm {} +
+    rm -r bin/
+else
+    build_webcam_rs
+    build_image_rs
+    build_project $@
+fi
