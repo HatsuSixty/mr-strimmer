@@ -11,6 +11,7 @@ use std::thread::{sleep, spawn};
 use std::time::Duration;
 
 use super::image::*;
+use super::parser::*;
 
 pub fn change_img(image: String) {
     let host = "localhost:6969";
@@ -153,13 +154,6 @@ pub fn floatimg(image: String) {
     }
 
     let texture_creator = canvas.texture_creator();
-    let texture;
-    if let Ok(t) = texture_creator.load_texture(Path::new(image_path.as_str())) {
-        texture = t;
-    } else {
-        eprintln!("ERROR: Could not create texture from image `{}`", image_path);
-        exit(1);
-    }
 
     let mut event_pump;
     if let Ok(e) = sdl_context.event_pump() {
@@ -178,7 +172,15 @@ pub fn floatimg(image: String) {
         }
 
         if let Ok(msg) = rx.recv_timeout(Duration::from_millis(10)) {
-            println!("[floatimg] request: {}", msg)
+            println!("[floatimg] request: {:?}", parse_request(msg));
+        }
+
+        let texture;
+        if let Ok(t) = texture_creator.load_texture(Path::new(image_path.as_str())) {
+            texture = t;
+        } else {
+            eprintln!("ERROR: Could not create texture from image `{}`", image_path);
+            exit(1);
         }
 
         canvas.clear();

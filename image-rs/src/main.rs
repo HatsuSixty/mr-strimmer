@@ -4,6 +4,7 @@ use std::process::exit;
 
 mod video;
 mod image;
+mod parser;
 
 use video::*;
 
