@@ -16,7 +16,7 @@ This project depends on `OpenCV` and `SDL2`, which can be installed via the comm
 
 #### Arch Linux
 ```console
-# pacman -S vtk fmt glew opencv qt5-base clang sdl2
+# pacman -S clang fmt glew jsoncpp opencv openmpi qt5-base sdl2 sdl2_image vtk
 ```
 
 ### Building and Running
