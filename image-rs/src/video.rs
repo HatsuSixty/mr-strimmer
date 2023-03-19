@@ -32,6 +32,7 @@ pub fn change_img(image: String) {
 
 pub fn floatimg(image: String) {
     let (tx, rx) = channel();
+    let mut image_counter = 0;
 
     spawn(move || {
         let listener = TcpListener::bind("localhost:6969").unwrap();
@@ -138,7 +139,9 @@ pub fn floatimg(image: String) {
         if let Ok(msg) = rx.recv_timeout(Duration::from_millis(10)) {
             let args = parse_request(msg);
             if args[0] == "chimg".to_string() {
-                image_path = args[1].clone();
+                image_path = format!("/tmp/image{}", image_counter);
+                image_counter += 1;
+                download_file(args[1].clone(), image_path.clone());
                 println!("[floatimg] changing image to: `{}`", image_path);
             }
         }

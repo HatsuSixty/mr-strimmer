@@ -11,11 +11,11 @@ use video::*;
 
 fn usage(myself: String, error: bool) {
     let help = format!(
-        r#"USAGE: {} [OPTIONS] <INPUT>
-  INPUT: The image that is going to be displayed
+        r#"USAGE: {} [OPTIONS] <URL>
+  URL: The url of the image that is going to be displayed
   OPTIONS:
-    --help        Shows this help and exits with 0 exit code
-    --set <file>  Change the image that is currently being displayed to <file>"#,
+    --help       Shows this help and exits with 0 exit code
+    --set <URL>  Change the currently displaying image to the image of the URL <url>"#,
         myself
     );
     if !error {
