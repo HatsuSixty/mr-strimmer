@@ -70,9 +70,11 @@ build_project() {
 
 if [ "$1" = "clean" ]; then
     find . -iname "*~" -exec rm {} +
+    rm -rf assets/
     rm -rf bin/
 elif [ "$1" = "clean_all" ]; then
     find . -iname "*~" -exec rm {} +
+    rm -rf assets/
     rm -rf bin/
     git clean -fdx
 else
