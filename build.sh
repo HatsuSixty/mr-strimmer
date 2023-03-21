@@ -36,6 +36,30 @@ build_image_rs() {
     cp $image_rs_path ./bin/
 }
 
+build_text_rs() {
+    cargo build --manifest-path=./text-rs/Cargo.toml
+
+    text_rs_path=""
+    if [ -f ./text-rs/target/debug/text-rs ]; then
+        text_rs_path=./text-rs/target/debug/text-rs
+    elif [ -f ./text-rs/target/release/text-rs ]; then
+        text_rs_path=./text-rs/release/debug/text-rs
+    else
+        echo "ERROR: Could not find `text-rs` binary path" 1>&2
+    fi
+
+    mkdir -p ./bin
+    mkdir -p ./assets
+
+    cp $text_rs_path ./bin/
+
+    if [ -f ./text-rs/Cantarell.ttf ]; then
+        cp ./text-rs/Cantarell.ttf ./assets/
+    else
+        echo "ERROR: Could not find file `Cantarell.ttf`" 1>&2
+    fi
+}
+
 build_project() {
     cargo build
     if [ "$1" = "run" ]; then
@@ -54,5 +78,6 @@ elif [ "$1" = "clean_all" ]; then
 else
     build_webcam_rs
     build_image_rs
+    build_text_rs
     build_project $@
 fi

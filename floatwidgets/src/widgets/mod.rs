@@ -4,6 +4,7 @@ use std::process::exit;
 
 pub mod floatimg;
 pub mod floatwebcam;
+pub mod floatext;
 
 pub fn run_from_bin(exe: String, args: String) {
     if Path::new(format!("./bin/{}", exe).as_str()).is_file() {

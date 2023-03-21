@@ -56,6 +56,10 @@ async fn main() {
         floatwebcam::floatwebcam();
     });
 
+    spawn(|| {
+        floatext::floatext("assets/Cantarell.ttf".to_string(), "Hello, World!".to_string());
+    });
+
     let framework = StandardFramework::new()
         .configure(|c| c.prefix("!")) // set the bot's prefix to "!"
         .help(&HELP_CMD)
