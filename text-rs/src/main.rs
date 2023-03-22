@@ -71,23 +71,6 @@ fn floatext(font_path: &Path, text: &str, image_background_path: &str) -> Result
         .create_texture_from_surface(&surface)
         .map_err(|e| e.to_string())?;
 
-    if (|| {
-        let image_texture;
-        if let Ok(t) = texture_creator.load_texture(Path::new(image_background_path)) {
-            image_texture = t;
-        } else {
-            return 1;
-        }
-
-        canvas.copy(&image_texture, None, None).unwrap();
-        canvas.present();
-
-        return 0;
-    })() == 1 {
-        canvas.set_draw_color(Color::RGBA(0, 0, 0, 255));
-        canvas.clear();
-    }
-
     let TextureQuery { width, height, .. } = texture.query();
 
     // If the example text is too big for the screen, downscale it (and center irregardless)
@@ -99,9 +82,6 @@ fn floatext(font_path: &Path, text: &str, image_background_path: &str) -> Result
         SCREEN_HEIGHT - padding,
     );
 
-    canvas.copy(&texture, None, Some(target))?;
-    canvas.present();
-
     'mainloop: loop {
         for event in sdl_context.event_pump()?.poll_iter() {
             match event {
@@ -109,6 +89,24 @@ fn floatext(font_path: &Path, text: &str, image_background_path: &str) -> Result
                 _ => {}
             }
         }
+
+        if (|| {
+            let image_texture;
+            if let Ok(t) = texture_creator.load_texture(Path::new(image_background_path)) {
+                image_texture = t;
+            } else {
+                return 1;
+            }
+
+            canvas.copy(&image_texture, None, None).unwrap();
+
+            return 0;
+        })() == 1 {
+            canvas.set_draw_color(Color::RGBA(0, 0, 0, 255));
+        }
+
+        canvas.copy(&texture, None, Some(target))?;
+        canvas.present();
     }
 
     Ok(())
