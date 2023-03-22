@@ -3,12 +3,13 @@ use std::path::Path;
 use std::process::exit;
 
 use sdl2::event::Event;
+use sdl2::image::LoadTexture;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::TextureQuery;
 
-static SCREEN_WIDTH: u32 = 800;
-static SCREEN_HEIGHT: u32 = 600;
+static SCREEN_WIDTH: u32 = 621;
+static SCREEN_HEIGHT: u32 = 85;
 
 // handle the annoying Rect i32
 macro_rules! rect(
@@ -41,7 +42,7 @@ fn get_centered_rect(rect_width: u32, rect_height: u32, cons_width: u32, cons_he
     rect!(cx, cy, w, h)
 }
 
-fn floatext(font_path: &Path, text: &str) -> Result<(), String> {
+fn floatext(font_path: &Path, text: &str, image_background_path: &str) -> Result<(), String> {
     let sdl_context = sdl2::init()?;
     let video_subsys = sdl_context.video()?;
     let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
@@ -49,6 +50,7 @@ fn floatext(font_path: &Path, text: &str) -> Result<(), String> {
     let window = video_subsys
         .window(text, SCREEN_WIDTH, SCREEN_HEIGHT)
         .position_centered()
+        .borderless()
         .opengl()
         .build()
         .map_err(|e| e.to_string())?;
@@ -63,19 +65,33 @@ fn floatext(font_path: &Path, text: &str) -> Result<(), String> {
     // render a surface, and convert it to a texture bound to the canvas
     let surface = font
         .render(text)
-        .blended(Color::RGBA(255, 0, 0, 255))
+        .blended(Color::RGBA(255, 255, 255, 255))
         .map_err(|e| e.to_string())?;
     let texture = texture_creator
         .create_texture_from_surface(&surface)
         .map_err(|e| e.to_string())?;
 
-    canvas.set_draw_color(Color::RGBA(195, 217, 255, 255));
-    canvas.clear();
+    if (|| {
+        let image_texture;
+        if let Ok(t) = texture_creator.load_texture(Path::new(image_background_path)) {
+            image_texture = t;
+        } else {
+            return 1;
+        }
+
+        canvas.copy(&image_texture, None, None).unwrap();
+        canvas.present();
+
+        return 0;
+    })() == 1 {
+        canvas.set_draw_color(Color::RGBA(0, 0, 0, 255));
+        canvas.clear();
+    }
 
     let TextureQuery { width, height, .. } = texture.query();
 
     // If the example text is too big for the screen, downscale it (and center irregardless)
-    let padding = 64;
+    let padding = 4;
     let target = get_centered_rect(
         width,
         height,
@@ -89,7 +105,7 @@ fn floatext(font_path: &Path, text: &str) -> Result<(), String> {
     'mainloop: loop {
         for event in sdl_context.event_pump()?.poll_iter() {
             match event {
-                Event::KeyDown { .. } => break 'mainloop,
+                Event::Quit { .. } => break 'mainloop,
                 _ => {}
             }
         }
@@ -111,6 +127,12 @@ fn main() {
 
     let font = Path::new(args[1].as_str());
     let text = args[2].as_str();
+    let bimg;
+    if let Some(x) = args.get(3) {
+        bimg = x.as_str();
+    } else {
+        bimg = "/tmp/invalid.png";
+    }
 
-    floatext(font, text).unwrap();
+    floatext(font, text, bimg).unwrap();
 }
