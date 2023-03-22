@@ -15,8 +15,8 @@ use toml::Table;
 mod commands;
 
 use commands::basic_commands::*;
-use commands::notify::*;
 use commands::chimg::*;
+use commands::notify::*;
 
 #[group]
 #[commands(ping, notify, chimg)]
@@ -57,7 +57,11 @@ async fn main() {
     });
 
     spawn(|| {
-        floatext::floatext("assets/Cantarell.ttf".to_string(), "Hello, World!".to_string());
+        floatext::floatext(
+            "assets/Cantarell.ttf".to_string(),
+            "Hello, World!".to_string(),
+            String::new(),
+        );
     });
 
     let framework = StandardFramework::new()
