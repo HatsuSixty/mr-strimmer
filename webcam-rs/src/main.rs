@@ -1,9 +1,11 @@
 use sdl2::event::Event;
 use sdl2::pixels::{Color, PixelFormatEnum};
+use sdl2::rect::Point;
 use sdl2::render::{Texture, TextureCreator};
 use sdl2::surface::Surface;
 use sdl2::video::WindowContext;
 
+use std::env::args;
 use std::process::exit;
 use std::thread::sleep;
 use std::time::Duration;
@@ -52,6 +54,45 @@ fn create_texture_from_u8_vec(
 }
 
 fn main() {
+    let args: Vec<String> = args().collect();
+
+    let mut border_color_hex = "0x01a1d1".to_string();
+
+    if args.len() > 1 {
+        match args[1].as_str() {
+            "--help" => {
+                println!(
+                    r#"USAGE: {} [OPTIONS] [BORDERCOLOR]
+  OPTIONS:
+    --help       Prints this help
+  BORDERCOLOR:   The color of the border around the webcam"#,
+                    args[0]
+                );
+                exit(0);
+            }
+            _ => {
+                border_color_hex = args[1].clone();
+            }
+        }
+    }
+
+    if border_color_hex.starts_with("0x") {
+        // i know, absoletely beautiful
+        border_color_hex = border_color_hex.chars().skip(1).collect::<String>();
+        border_color_hex = border_color_hex.chars().skip(1).collect::<String>();
+    }
+
+    let border_color;
+    match u32::from_str_radix(border_color_hex.as_str(), 16) {
+        Ok(value) => {
+            border_color = value;
+        }
+        Err(_) => {
+            eprintln!("ERROR: Invalid hex string: {}", border_color_hex);
+            exit(1);
+        }
+    }
+
     let mut cam;
     if let Ok(c) = videoio::VideoCapture::new(0, videoio::CAP_ANY) {
         cam = c;
@@ -163,6 +204,25 @@ fn main() {
 
         canvas.clear();
         canvas.copy(&texture, None, None).unwrap();
+
+        let color;
+        {
+            let red = ((border_color >> 16) & 0xFF) as u8;
+            let green = ((border_color >> 8) & 0xFF) as u8;
+            let blue = (border_color & 0xFF) as u8;
+            color = Color::RGB(red, green, blue);
+        }
+        canvas.set_draw_color(color);
+
+        for x in 0..width {
+            for y in 0..height {
+                if (y > height - 50) || (y < 50) || (x > width - 50) || (x < 50) {
+                    canvas.draw_point(Point::new(x, y)).unwrap();
+                }
+            }
+        }
+        canvas.set_draw_color(Color::RGB(255, 0, 0));
+
         canvas.present();
         sleep(Duration::new(0, 1_000_000_000u32 / 30));
     }
