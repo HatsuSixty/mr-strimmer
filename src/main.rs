@@ -94,8 +94,15 @@ async fn main() {
     }
 
     if config.widgets.camera.enabled {
+        let color;
+        if config.widgets.camera.border_color == "default".to_string() {
+            color = String::new();
+        } else {
+            color = config.widgets.camera.border_color;
+        }
+
         spawn(|| {
-            floatwebcam::floatwebcam();
+            floatwebcam::floatwebcam(color);
         });
     }
 
