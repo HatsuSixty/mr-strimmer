@@ -53,6 +53,7 @@ struct TextConfig {
     enabled: bool,
     text: String,
     background_image: String,
+    font: String,
 }
 
 #[derive(Deserialize)]
@@ -99,9 +100,16 @@ async fn main() {
     }
 
     if config.widgets.text.enabled {
+        let font;
+        if config.widgets.text.font == "default".to_string() {
+            font = "assets/Cantarell.ttf".to_string();
+        } else {
+            font = config.widgets.text.font;
+        }
+
         spawn(|| {
             floatext::floatext(
-                "assets/Cantarell.ttf".to_string(),
+                font,
                 config.widgets.text.text,
                 config.widgets.text.background_image,
             );
