@@ -117,9 +117,10 @@ fn main() {
 
     if args.len() < 3 {
         eprintln!("ERROR: No input file or text was provided");
-        eprintln!(r#"USAGE: {} <INPUT> <TEXT>
+        eprintln!(r#"USAGE: {} <INPUT> <TEXT> [BACKIMG]
   INPUT: The font that will be used for rendering the text
-  TEXT: The text that is going to be rendered"#, args[0]);
+  TEXT: The text that is going to be rendered
+  BACKIMG: The image that is going to be displayed behind the text"#, args[0]);
         exit(1);
     }
 
