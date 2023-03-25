@@ -23,17 +23,18 @@ def build_binary(binary, release):
     run_cmd(cmd)
 
     bin_path = ""
-    if isfile(f"./{binary}/target/release/{binary}"):
+    if release:
         bin_path = f"./{binary}/target/release/{binary}"
-    elif isfile(f"./{binary}/target/debug/{binary}"):
-        bin_path = f"./{binary}/target/debug/{binary}"
     else:
-        print("ERROR: Could not find `webcam-rs` binary path", file=stderr)
-        exit(1)
+        bin_path = f"./{binary}/target/debug/{binary}"
 
     mkdir_ine("bin")
 
-    copy2(bin_path, "./bin/" + basename(bin_path))
+    try:
+        copy2(bin_path, "./bin/" + basename(bin_path))
+    except FileNotFoundError:
+        print(f"ERROR: Could not find `{bin_path}` executable (release = `{release}`)", file=stderr)
+        exit(1)
 
 def build_project(run, release):
     release_args = []
