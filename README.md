@@ -12,15 +12,15 @@ In other words, it's a bot designed to make livestreams on discord.
 
 ### Dependencies
 
-This project depends on `OpenCV` and `SDL2`, which can be installed via the command:
+This project depends on `Python` (for building), `OpenCV` and `SDL2`, which can be installed via the command:
 
 #### Arch Linux
 ```console
-# pacman -S clang fmt glew jsoncpp opencv openmpi qt5-base sdl2 sdl2_image sdl2_ttf vtk
+# pacman -S clang fmt glew jsoncpp opencv openmpi python qt5-base sdl2 sdl2_image sdl2_ttf vtk
 ```
 
 ### Building and Running
 
 ```console
-$ ./build.sh run
+$ ./build.py build run
 ```
