@@ -8,6 +8,7 @@ from subprocess import run
 from sys import argv, stderr, stdout
 
 def mkdir_ine(dirr):
+    print(f"[INFO] Creating directory `./{dirr}`...")
     if not isdir(f"./{dirr}"):
         mkdir(f"./{dirr}")
 
