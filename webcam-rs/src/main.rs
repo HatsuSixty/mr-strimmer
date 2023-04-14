@@ -28,7 +28,7 @@ fn create_texture_from_u8_vec(
         width,
         height,
         width * 3,
-        PixelFormatEnum::BGR24,
+        PixelFormatEnum::RGB24,
     ) {
         surface = s;
     } else {
