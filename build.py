@@ -13,8 +13,12 @@ def mkdir_ine(dirr):
         mkdir(f"./{dirr}")
 
 def run_cmd(command):
-    print(f"[CMD] {join(command)}")
-    run(command)
+    shell_formatted_command = join(command)
+    print(f"[CMD] {shell_formatted_command}")
+    returnc = run(command).returncode
+    if returnc != 0:
+        print(f"ERROR: Command `{shell_formatted_command}` exited with code `{returnc}`")
+        exit(1)
 
 def build_binary(binary, release):
     cmd = ["cargo", "build", f"--manifest-path=./{binary}/Cargo.toml"]
