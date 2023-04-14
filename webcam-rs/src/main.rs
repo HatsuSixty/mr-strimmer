@@ -45,10 +45,7 @@ fn create_texture_from_u8_vec(
 }
 
 fn main() {
-    nokhwa::nokhwa_initialize(|x| {
-        println!("[INFO] Nokhwa initialized: {}", x);
-    });
-    sleep(Duration::from_millis(2000));
+    nokhwa::nokhwa_initialize(|x| if !x { eprintln!("ERROR: Could not initialize Nokhwa") });
     webcam_rs_main();
 }
 
