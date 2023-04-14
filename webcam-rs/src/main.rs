@@ -5,25 +5,16 @@ use sdl2::render::{Texture, TextureCreator};
 use sdl2::surface::Surface;
 use sdl2::video::WindowContext;
 
+use nokhwa::Camera;
+use nokhwa::pixel_format::RgbFormat;
+use nokhwa::utils::{CameraIndex, RequestedFormat, RequestedFormatType};
+
 use std::env::args;
 use std::process::exit;
 use std::thread::sleep;
 use std::time::Duration;
 
-use opencv::{prelude::*, videoio};
-
 static WINDOW_SCALE_FACTOR: f32 = 0.35;
-
-fn mat_to_vec_u8(mat: &Mat) -> Vec<u8> {
-    let mut vec: Vec<u8> = Vec::new();
-    let bytes = mat.data_bytes().unwrap();
-
-    for pixel in bytes {
-        vec.push(*pixel);
-    }
-
-    vec
-}
 
 fn create_texture_from_u8_vec(
     texture_creator: &TextureCreator<WindowContext>,
@@ -54,6 +45,14 @@ fn create_texture_from_u8_vec(
 }
 
 fn main() {
+    nokhwa::nokhwa_initialize(|x| {
+        println!("[INFO] Nokhwa initialized: {}", x);
+    });
+    sleep(Duration::from_millis(2000));
+    webcam_rs_main();
+}
+
+fn webcam_rs_main() {
     let args: Vec<String> = args().collect();
 
     let mut border_color_hex = "0x01a1d1".to_string();
@@ -93,32 +92,37 @@ fn main() {
         }
     }
 
-    let mut cam;
-    if let Ok(c) = videoio::VideoCapture::new(0, videoio::CAP_ANY) {
-        cam = c;
-    } else {
-        eprintln!("ERROR: Could not create `cam: VideoCapture`");
-        exit(1);
+    let index = CameraIndex::Index(0);
+    let requested = RequestedFormat::new::<RgbFormat>(RequestedFormatType::AbsoluteHighestFrameRate);
+    let mut camera;
+    match Camera::new(index, requested) {
+        Ok(c) => camera = c,
+        Err(e) => {
+            eprintln!("ERROR: Could create new `Camera`: {}", e);
+            exit(1);
+        }
     }
 
-    let opened = videoio::VideoCapture::is_opened(&cam).unwrap();
-    if !opened {
-        eprintln!("ERROR: Could not open default camera");
+    if let Err(e) = camera.open_stream() {
+        eprintln!("ERROR: Could not open stream for `Camera`: {}", e);
         exit(1);
     }
 
     let (width, height);
     {
-        let mut frame = Mat::default();
-        if let Err(_) = cam.read(&mut frame) {
-            eprintln!("ERROR: Could not get frame from camera");
-            exit(1);
+        let frame;
+        match camera.frame() {
+            Ok(f) => frame = f,
+            Err(e) => {
+                eprintln!("ERROR: Could not get camera frame: {}", e);
+                exit(1);
+            }
         }
 
-        let dimensions = frame.size().unwrap();
+        let decoded = frame.decode_image::<RgbFormat>().unwrap();
 
-        width = dimensions.width;
-        height = dimensions.height;
+        width = decoded.width() as i32;
+        height = decoded.height() as i32;
     }
 
     let sdl_context;
@@ -190,13 +194,10 @@ fn main() {
 
         let pixels: Vec<u8>;
         {
-            let mut frame = Mat::default();
-            if let Err(_) = cam.read(&mut frame) {
-                eprintln!("ERROR: Could not get frame from camera");
-                exit(1);
-            }
+            let frame = camera.frame().unwrap();
+            let decoded = frame.decode_image::<RgbFormat>().unwrap();
 
-            pixels = mat_to_vec_u8(&frame);
+            pixels = decoded.into_raw();
         }
 
         let texture =

@@ -34,7 +34,7 @@ This project depends on `Python` (for building), `OpenCV` and `SDL2`, which can 
 
 #### Arch Linux
 ```console
-# pacman -S clang fmt glew jsoncpp opencv openmpi python qt5-base sdl2 sdl2_image sdl2_ttf vtk
+# pacman -S clang python sdl2 sdl2_image sdl2_ttf
 ```
 
 ### Building and Running

@@ -3,8 +3,9 @@ name = "webcam-rs"
 version = "0.1.0"
 edition = "2021"
 
-[dependencies]
-opencv = "0.78.0"
+[dependencies.nokhwa]
+version = "0.10.0"
+features = ["input-native"]
 
 [dependencies.sdl2]
 version = "0.35.2"
