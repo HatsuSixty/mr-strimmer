@@ -30,7 +30,7 @@ image  = { enabled = false,    image_path = "default" }
 
 ### Dependencies
 
-This project depends on `Python` (for building), `OpenCV` and `SDL2`, which can be installed via the command:
+This project depends on `Python` (for building) and `SDL2`, which can be installed via the command:
 
 #### Arch Linux
 ```console
